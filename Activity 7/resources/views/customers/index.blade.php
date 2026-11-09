@@ -1,0 +1,17 @@
+@extends('layouts.app')
+
+@section('title', 'Customers')
+@section('breadcrumb', 'Customer Accounts')
+
+@section('content')
+<div class="page-heading page-heading-actions"><div><span class="eyebrow"><span class="mini-spark">✦</span> ACCOUNT DIRECTORY</span><h1 class="page-h1">Customer <em>accounts.</em></h1><p class="page-subtitle">A clear view of every customer in your database.</p></div><a href="{{ route('customers.create') }}" class="btn btn-primary">@include('components.icon', ['name' => 'plus', 'size' => 18]) Create customer</a></div>
+<div class="directory-stats"><div class="directory-stat-icon">@include('components.icon', ['name' => 'customers', 'size' => 24])</div><div><strong>{{ number_format($totalCustomers) }}</strong><span>Total customer records</span></div><div class="directory-stat-meta">LIVE DATABASE <span class="live-dot"></span></div></div>
+<section class="panel table-panel"><div class="panel-toolbar"><div><span class="section-kicker">ALL RECORDS</span><h3>Customer directory <span class="result-count">{{ $customers->count() }}</span></h3></div><form action="{{ route('customers.index') }}" method="GET" role="search" class="search-form"><label for="customer-search" class="sr-only">Search customers</label><span class="search-icon">@include('components.icon', ['name' => 'search', 'size' => 18])</span><input id="customer-search" type="search" name="search" value="{{ $search }}" placeholder="Search customers..."><button type="submit" class="search-submit">Search</button>@if($search !== '')<a href="{{ route('customers.index') }}" class="clear-search" aria-label="Clear search">@include('components.icon', ['name' => 'x', 'size' => 15])</a>@endif</form></div>
+<div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">CUSTOMER</th><th scope="col">EMAIL ADDRESS</th><th scope="col">PHONE NUMBER</th><th scope="col">DATE ADDED</th><th scope="col" class="align-right">ACTION</th></tr></thead><tbody>
+@forelse($customers as $customer)
+<tr><td><div class="table-name"><div class="table-avatar initials-avatar">{{ strtoupper(mb_substr($customer->full_name, 0, 1)) }}</div><div><strong>{{ $customer->full_name }}</strong><span>Customer #{{ str_pad((string) $customer->id, 4, '0', STR_PAD_LEFT) }}</span></div></div></td><td class="muted-table-cell">{{ $customer->email }}</td><td class="muted-table-cell">{{ $customer->phone ?: 'Not provided' }}</td><td class="muted-table-cell">{{ $customer->created_at->format('M d, Y') }}</td><td class="align-right"><a href="{{ route('customers.edit', $customer) }}" class="table-edit">@include('components.icon', ['name' => 'edit', 'size' => 15]) Edit</a></td></tr>
+@empty
+<tr><td colspan="5"><div class="table-empty"><span class="empty-icon">@include('components.icon', ['name' => 'search', 'size' => 26])</span><strong>No customers found</strong><p>{{ $search !== '' ? 'Try a different search or clear the filter.' : 'Create your first customer record to get started.' }}</p><a href="{{ $search !== '' ? route('customers.index') : route('customers.create') }}" class="text-link">{{ $search !== '' ? 'Clear search' : 'Create a customer' }} @include('components.icon', ['name' => 'arrow-right', 'size' => 16])</a></div></td></tr>
+@endforelse
+</tbody></table></div><div class="table-foot">Showing <strong>{{ $customers->count() }}</strong> of <strong>{{ number_format($totalCustomers) }}</strong> customers <span>Sorted by customer name</span></div></section>
+@endsection
